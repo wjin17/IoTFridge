@@ -52,6 +52,7 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(ThermistorPowerPin, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
 }
 
@@ -68,10 +69,12 @@ void loop() {
   }
 
   if (Temp > UpperTemp) {
-    digitalWrite(LED_BUILTIN, HIGH);
+    // If temp is greater than upper bound, activate cooling
+    digitalWrite(LED_BUILTIN, LOW);
   }
 
   if (Temp < LowerTemp) {
-    digitalWrite(LED_BUILTIN, LOW);  
+    // If temp is less than lower bound, deactivate cooling
+    digitalWrite(LED_BUILTIN, HIGH);  
   }
 }
