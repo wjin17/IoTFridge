@@ -1,4 +1,12 @@
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "config.h"
+#include "fan_frames.h"
+
+#define OLED_RESET 0  // GPIO0
+Adafruit_SSD1306 display(OLED_RESET);
 
 // Mapping NodeMCU Ports to Arduino GPIO Pins
 // Allows use of NodeMCU Port nomenclature in config.h
@@ -15,6 +23,8 @@
 
 unsigned long time_now = 0;
 
+bool fan_on;
+
 const int ThermistorPowerPin = THERMISTOR_POWER;
 const int ThermistorReadPin = THERMISTOR_READ;
 const int ThermistorDelay = THERMISTOR_DELAY;
@@ -28,6 +38,10 @@ float Temp;
 
 float LowerTemp = LOWER_TEMP;
 float UpperTemp = UPPER_TEMP;
+
+int xx=22;
+int yy=0;
+int tt=200;
 
 double get_thermistor_reading() {
   // returns thermistor value in F
@@ -54,6 +68,12 @@ void setup() {
   pinMode(ThermistorPowerPin, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.display();
+  display.clearDisplay();
+
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
 }
 
 void loop() {
@@ -71,10 +91,58 @@ void loop() {
   if (Temp > UpperTemp) {
     // If temp is greater than upper bound, activate cooling
     digitalWrite(LED_BUILTIN, LOW);
+    fan_on = true;
   }
 
   if (Temp < LowerTemp) {
     // If temp is less than lower bound, deactivate cooling
-    digitalWrite(LED_BUILTIN, HIGH);  
+    digitalWrite(LED_BUILTIN, HIGH);
+    fan_on = false;
+  }
+
+  if (fan_on) {
+    display.clearDisplay();
+    display.drawBitmap(xx, yy,frame0,24,24, 1);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,24);
+    display.print("T: ");
+    display.print(Temp);
+    display.print("F\n");
+    display.display();
+    delay(tt);
+    
+    display.clearDisplay();
+    display.drawBitmap(xx, yy,frame1,24,24, 1);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,24);
+    display.print("T: ");
+    display.print(Temp);
+    display.print("F\n");
+    display.display();
+    delay(tt);
+    
+    display.clearDisplay();
+    display.drawBitmap(xx, yy,frame2,24,24, 1);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,24);
+    display.print("T: ");
+    display.print(Temp);
+    display.print("F\n");
+    display.display();
+    delay(tt);
+  } else {
+    display.clearDisplay();
+    display.drawBitmap(xx, yy,frame0,24,24, 1);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,24);
+    display.print("T: ");
+    display.print(Temp);
+    display.print("F\n");
+    display.display();
+    delay(tt);
   }
 }
